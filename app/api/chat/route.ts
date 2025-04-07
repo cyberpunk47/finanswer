@@ -57,12 +57,19 @@ export async function POST(req: Request) {
     }
 
     // Get API key from environment variables
-    const API_KEY = process.env.GEMINI_API_KEY || "AIzaSyBs3JYlWOGHbH1pNvrDjZgHs3uQ0v7d7v0";
+    const API_KEY = process.env.GEMINI_API_KEY;
+    
+    // Check if API key is available
+    if (!API_KEY) {
+      console.error("Missing Gemini API key");
+      return NextResponse.json({ 
+        text: "Configuration error. Please check server logs." 
+      }, { status: 500 });
+    }
 
     // Initialize the Google Generative AI client
     const genAI = new GoogleGenerativeAI(API_KEY);
     
-    // FIXED TYPO: Changed 'gemin-2.0-flash' to 'gemini-pro'
     // Using gemini-pro as it's more widely available
     const model = genAI.getGenerativeModel({ 
         model: "gemini-1.5-flash-latest"

@@ -1,4 +1,5 @@
 'use client'
+
 import { useState, useRef, useEffect } from 'react'
 import { generateResponse } from '../utils/gemini'
 import { Bot, User, Send, Plus, Trash2, Sparkles, Lightbulb, TrendingUp, 

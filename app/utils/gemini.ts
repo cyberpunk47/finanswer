@@ -17,8 +17,8 @@ const FINANCE_KEYWORDS = [
   'market share', 'market cap', 'cryptocurrency', 'exchange', 'trading'
 ];
 
-// Consider centralizing your API key management and removing hardcoded keys
-const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || 'AIzaSyBs3JYlWOGHbH1pNvrDjZgHs3uQ0v7d7v0';
+// REMOVED hardcoded API key - we don't need it in this file anymore
+// This file only calls our secure API route which handles the key server-side
 
 export async function generateResponse(prompt: string): Promise<string> {
   try {
