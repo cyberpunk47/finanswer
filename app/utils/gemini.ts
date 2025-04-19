@@ -9,7 +9,7 @@ const FINANCE_KEYWORDS = [
   'emergency fund', 'inflation', 'liquidity', 'market cap', 'recession',
   'roi', 'volatility', 'tax loss harvesting', 'annuity', 'balance sheet',
   'blue chip', 'brokerage', 'debt', 'equity', 'fidelity', 'hedge fund',
-  'interest rate', 'margin', 'net worth', 'option', 'p/e ratio', 'quantitative easing',
+  'interest rate', 'mgit commit -m "Add chatbot files with new README"argin', 'net worth', 'option', 'p/e ratio', 'quantitative easing',
   'reit', 'sec', 'treasury', 'valuation', 'wealth', 'yield curve', 'crypto',
   'bitcoin', 'blockchain', 'nft', 'token', 'ico', 'defi', 'stablecoin',
   'budget', 'saving', 'loan', 'mortgage', 'credit', 'interest', 'tax',
