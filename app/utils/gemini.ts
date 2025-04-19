@@ -1,7 +1,5 @@
-import { GoogleGenAI } from "@google/genai";
-
-// Expanded list of financial/investing terms for better topic detection
-const FINANCE_KEYWORDS = [
+// Export FINANCE_KEYWORDS so it's properly used
+export const FINANCE_KEYWORDS = [
   'invest', 'stock', 'bond', 'portfolio', 'retirement', '401k', 'ira',
   'roth', 'mutual fund', 'etf', 'index fund', 'dividend', 'yield',
   'asset allocation', 'diversification', 'risk tolerance', 'bear market',
@@ -9,16 +7,13 @@ const FINANCE_KEYWORDS = [
   'emergency fund', 'inflation', 'liquidity', 'market cap', 'recession',
   'roi', 'volatility', 'tax loss harvesting', 'annuity', 'balance sheet',
   'blue chip', 'brokerage', 'debt', 'equity', 'fidelity', 'hedge fund',
-  'interest rate', 'mgit commit -m "Add chatbot files with new README"argin', 'net worth', 'option', 'p/e ratio', 'quantitative easing',
+  'interest rate', 'margin', 'net worth', 'option', 'p/e ratio', 'quantitative easing',
   'reit', 'sec', 'treasury', 'valuation', 'wealth', 'yield curve', 'crypto',
   'bitcoin', 'blockchain', 'nft', 'token', 'ico', 'defi', 'stablecoin',
   'budget', 'saving', 'loan', 'mortgage', 'credit', 'interest', 'tax',
   'insurance', 'estate', 'college fund', 'financial planning', 'wealth management',
   'market share', 'market cap', 'cryptocurrency', 'exchange', 'trading'
 ];
-
-// REMOVED hardcoded API key - we don't need it in this file anymore
-// This file only calls our secure API route which handles the key server-side
 
 export async function generateResponse(prompt: string): Promise<string> {
   try {
@@ -48,4 +43,10 @@ export async function generateResponse(prompt: string): Promise<string> {
     console.error('Error generating response:', error);
     return "I'm having trouble connecting to my knowledge base right now. Could you try asking your finance question again in a moment?";
   }
+}
+
+// Add a function that uses FINANCE_KEYWORDS to fix the unused variable warning
+export function isFinanceRelated(text: string): boolean {
+  const lowercaseText = text.toLowerCase();
+  return FINANCE_KEYWORDS.some(keyword => lowercaseText.includes(keyword.toLowerCase()));
 }

@@ -2,16 +2,18 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { generateResponse } from '../utils/gemini'
-import { Bot, User, Send, Plus, Trash2, Sparkles, Lightbulb, TrendingUp, 
-         Wallet, X, Menu, MessageSquare, Zap, AlertTriangle, Moon, Sun } from 'lucide-react'
+import {
+    Bot, User, Send, Plus, Trash2, Sparkles, Lightbulb, TrendingUp,
+    Wallet, X, Menu, MessageSquare, Zap, AlertTriangle, Moon, Sun
+} from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 
 // Create a custom ChatInput component
-function ChatInput({ onSendMessage, loading, darkMode }: { 
-  onSendMessage: (message: string) => void, 
-  loading: boolean,
-  darkMode: boolean
+function ChatInput({ onSendMessage, loading, darkMode }: {
+    onSendMessage: (message: string) => void,
+    loading: boolean,
+    darkMode: boolean
 }) {
     const [message, setMessage] = useState('')
     const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -40,14 +42,14 @@ function ChatInput({ onSendMessage, loading, darkMode }: {
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder={darkMode ? "Message FinAnswer..." : "Ask about investing, stocks, ETFs, apps..."}
-                        className={`w-full p-3 pr-12 rounded-lg resize-none min-h-[48px] max-h-[150px] ${
-                            darkMode 
-                                ? 'bg-gray-700 text-white border-transparent focus:border-transparent focus:ring-2 focus:ring-blue-500' 
+                        className={`w-full p-3 pr-12 rounded-lg resize-none min-h-[48px] max-h-[150px] ${darkMode
+                                ? 'bg-gray-700 text-white border-transparent focus:border-transparent focus:ring-2 focus:ring-blue-500'
                                 : 'border border-gray-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-                        }`}
+                            }`}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault()
+                                if (!message.trim() || loading) return
                                 handleSubmit(e)
                             }
                         }}
@@ -57,11 +59,11 @@ function ChatInput({ onSendMessage, loading, darkMode }: {
                     <button
                         type="submit"
                         disabled={!message.trim() || loading}
-                        className={`absolute right-3 bottom-3 p-2 rounded-full ${
-                            !message.trim() || loading
+                        className={`absolute right-3 bottom-3 p-2 rounded-full ${!message.trim() || loading
                                 ? darkMode ? 'text-gray-500 cursor-not-allowed' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                 : darkMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700 text-white'
-                        } transition-colors`}
+                            } transition-colors`}
+                        aria-label="Send message"
                     >
                         <Send className="w-5 h-5" />
                     </button>
@@ -72,6 +74,29 @@ function ChatInput({ onSendMessage, loading, darkMode }: {
             </form>
         </div>
     )
+}
+
+// MessageContent component with fixed ReactMarkdown implementation
+function MessageContent({ content }: { content: string, isUserMessage?: boolean }) {
+    return (
+        <div className="prose prose-sm max-w-none break-words">
+            <ReactMarkdown
+                components={{
+                    p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                    ul: ({ children }) => <ul className="list-disc pl-4 mb-2">{children}</ul>,
+                    ol: ({ children }) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
+                    li: ({ children }) => <li className="mb-1">{children}</li>,
+                    h1: ({ children }) => <h1 className="text-xl font-bold mb-2 mt-3">{children}</h1>,
+                    h2: ({ children }) => <h2 className="text-lg font-bold mb-2 mt-3">{children}</h2>,
+                    h3: ({ children }) => <h3 className="text-md font-bold mb-2 mt-3">{children}</h3>,
+                    code: ({ children }) => <code className="bg-gray-100 dark:bg-gray-800 rounded px-1 py-0.5">{children}</code>,
+                    pre: ({ children }) => <pre className="bg-gray-100 dark:bg-gray-800 p-3 rounded my-2 overflow-auto">{children}</pre>
+                }}
+            >
+                {content}
+            </ReactMarkdown>
+        </div>
+    );
 }
 
 export default function Chat() {
@@ -232,37 +257,6 @@ export default function Chat() {
         "Can't predict future market performance"
     ]
 
-    // Format timestamp to display time
-    const formatTime = (date: Date) => {
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    // Component for rendering messages with markdown
-    const MessageContent = ({ content, isUserMessage }: { content: string, isUserMessage: boolean }) => {
-        if (isUserMessage) {
-            return <p className="whitespace-pre-wrap">{content}</p>;
-        }
-        
-        // Use components to apply styles instead of direct className on ReactMarkdown
-        return (
-            <ReactMarkdown
-                components={{
-                    p: ({ node, ...props }) => <p className={`whitespace-pre-wrap mb-4 ${darkMode ? 'text-gray-200' : ''}`} {...props} />,
-                    ul: ({ node, ...props }) => <ul className={`list-disc pl-6 mb-4 ${darkMode ? 'text-gray-200' : ''}`} {...props} />,
-                    ol: ({ node, ...props }) => <ol className={`list-decimal pl-6 mb-4 ${darkMode ? 'text-gray-200' : ''}`} {...props} />,
-                    li: ({ node, ...props }) => <li className="mb-1" {...props} />,
-                    h1: ({ node, ...props }) => <h1 className={`text-xl font-bold mb-4 mt-6 ${darkMode ? 'text-white' : ''}`} {...props} />,
-                    h2: ({ node, ...props }) => <h2 className={`text-lg font-bold mb-3 mt-5 ${darkMode ? 'text-white' : ''}`} {...props} />,
-                    h3: ({ node, ...props }) => <h3 className={`text-md font-bold mb-2 mt-4 ${darkMode ? 'text-white' : ''}`} {...props} />,
-                    a: ({ node, ...props }) => <a className="text-blue-600 hover:underline" {...props} />,
-                    code: ({ node, ...props }) => <code className={`p-0.5 rounded ${darkMode ? 'bg-gray-600' : 'bg-gray-100'}`} {...props} />,
-                }}
-            >
-                {content}
-            </ReactMarkdown>
-        )
-    }
-
     return (
         <div className={`flex h-screen overflow-hidden ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
             {/* Mobile overlay when sidebar is open */}
@@ -280,7 +274,7 @@ export default function Chat() {
             </AnimatePresence>
 
             {/* Sidebar - Claude-inspired with collapsible behavior */}
-            <div 
+            <div
                 ref={sidebarRef}
                 className={`
                     fixed md:relative inset-y-0 left-0 z-20 w-72 md:w-64 
@@ -310,6 +304,7 @@ export default function Chat() {
                             <button
                                 className={`md:hidden p-1.5 rounded-md ${darkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-500'}`}
                                 onClick={() => setSidebarOpen(false)}
+                                aria-label="Close sidebar"
                             >
                                 <X className="w-4 h-4" />
                             </button>
@@ -319,11 +314,11 @@ export default function Chat() {
                     <div className="p-4">
                         <button
                             onClick={handleNewChat}
-                            className={`flex items-center justify-center w-full gap-2 px-4 py-2.5 text-sm font-medium ${
-                                darkMode 
-                                    ? 'bg-blue-600 hover:bg-blue-700 text-white rounded-md' 
+                            className={`flex items-center justify-center w-full gap-2 px-4 py-2.5 text-sm font-medium ${darkMode
+                                    ? 'bg-blue-600 hover:bg-blue-700 text-white rounded-md'
                                     : 'bg-blue-600 hover:bg-blue-700 text-white rounded-md'
-                            } transition-colors`}
+                                } transition-colors`}
+                            aria-label="Start new chat"
                         >
                             <Plus className="w-4 h-4" />
                             New chat
@@ -344,11 +339,10 @@ export default function Chat() {
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.2 }}
-                                    className={`group flex items-center justify-between px-4 py-3 mx-2 my-1 text-sm cursor-pointer rounded-md transition-colors ${
-                                        currentConversationId === conversation.id
+                                    className={`group flex items-center justify-between px-4 py-3 mx-2 my-1 text-sm cursor-pointer rounded-md transition-colors ${currentConversationId === conversation.id
                                             ? darkMode ? 'bg-gray-700 text-white' : 'bg-blue-50 text-blue-600 font-medium'
                                             : darkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-700'
-                                    }`}
+                                        }`}
                                     onClick={() => {
                                         setCurrentConversationId(conversation.id)
                                         setSidebarOpen(false)
@@ -365,7 +359,7 @@ export default function Chat() {
                                                 handleDeleteChat(conversation.id)
                                             }}
                                             className={`${darkMode ? 'text-gray-400 hover:text-red-400' : 'text-gray-400 hover:text-red-500 p-1 rounded-md hover:bg-gray-200'} opacity-0 group-hover:opacity-100 focus:opacity-100`}
-                                            aria-label="Delete conversation"
+                                            aria-label={`Delete conversation: ${conversation.title}`}
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
@@ -409,7 +403,7 @@ export default function Chat() {
                                 // Dark mode welcome screen with 3-column layout
                                 <div className="text-center max-w-4xl mx-auto">
                                     <h1 className="text-4xl font-bold mb-10">FinAnswer</h1>
-                                    
+
                                     <div className="grid md:grid-cols-3 gap-6 mb-16">
                                         <div className="flex flex-col items-center">
                                             <Zap className="w-6 h-6 mb-4 text-blue-400" />
@@ -419,12 +413,13 @@ export default function Chat() {
                                                     key={i}
                                                     onClick={() => handleSendMessage(example.text)}
                                                     className="w-full p-4 mb-3 text-sm bg-gray-700 rounded-md hover:bg-gray-600 text-left"
+                                                    aria-label={`Ask example question: ${example.text}`}
                                                 >
-                                                    "{example.text}" →
+                                                    &quot;{example.text}&quot; →
                                                 </button>
                                             ))}
                                         </div>
-                                        
+
                                         <div className="flex flex-col items-center">
                                             <MessageSquare className="w-6 h-6 mb-4 text-green-400" />
                                             <h3 className="mb-4">Capabilities</h3>
@@ -434,7 +429,7 @@ export default function Chat() {
                                                 </div>
                                             ))}
                                         </div>
-                                        
+
                                         <div className="flex flex-col items-center">
                                             <AlertTriangle className="w-6 h-6 mb-4 text-yellow-400" />
                                             <h3 className="mb-4">Limitations</h3>
@@ -449,7 +444,7 @@ export default function Chat() {
                             ) : (
                                 // Light mode welcome screen
                                 <>
-                                    <motion.div 
+                                    <motion.div
                                         initial={{ scale: 0.9, opacity: 0 }}
                                         animate={{ scale: 1, opacity: 1 }}
                                         transition={{ duration: 0.3 }}
@@ -485,6 +480,7 @@ export default function Chat() {
                                                 transition={{ duration: 0.3, delay: 0.3 + (i * 0.1) }}
                                                 onClick={() => handleSendMessage(q.text)}
                                                 className="flex items-center gap-3 p-4 text-left border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all"
+                                                aria-label={`Ask question: ${q.text}`}
                                             >
                                                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-600">
                                                     {q.icon}
@@ -507,35 +503,32 @@ export default function Chat() {
                                     transition={{ duration: 0.3 }}
                                     className={`group flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
                                 >
-                                    <div className={`flex items-start space-x-2 max-w-[85%] md:max-w-[75%] ${
-                                        message.isUser ? 'flex-row-reverse space-x-reverse' : 'flex-row'
-                                    }`}>
-                                        <div className={`flex-shrink-0 p-2 rounded-full ${
-                                            message.isUser 
-                                                ? darkMode ? 'bg-blue-800' : 'bg-blue-100' 
-                                                : darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                                    <div className={`flex items-start space-x-2 max-w-[85%] md:max-w-[75%] ${message.isUser ? 'flex-row-reverse space-x-reverse' : 'flex-row'
                                         }`}>
-                                            {message.isUser 
-                                                ? <User className={`w-4 h-4 ${darkMode ? 'text-blue-200' : 'text-blue-600'}`} /> 
+                                        <div className={`flex-shrink-0 p-2 rounded-full ${message.isUser
+                                                ? darkMode ? 'bg-blue-800' : 'bg-blue-100'
+                                                : darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                                            }`}>
+                                            {message.isUser
+                                                ? <User className={`w-4 h-4 ${darkMode ? 'text-blue-200' : 'text-blue-600'}`} />
                                                 : <Bot className={`w-4 h-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`} />
                                             }
                                         </div>
-                                        
-                                        <div className={`relative rounded-lg px-4 py-3 ${
-                                            message.isUser
-                                                ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white' 
-                                                : darkMode ? 'bg-gray-800 border border-gray-700 text-gray-200' 
-                                                          : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
-                                        }`}>
-                                            <MessageContent 
-                                                content={message.text} 
-                                                isUserMessage={message.isUser} 
+
+                                        <div className={`relative rounded-lg px-4 py-3 ${message.isUser
+                                                ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'
+                                                : darkMode ? 'bg-gray-800 border border-gray-700 text-gray-200'
+                                                    : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
+                                            }`}>
+                                            <MessageContent
+                                                content={message.text}
+                                                isUserMessage={message.isUser}
                                             />
                                         </div>
                                     </div>
                                 </motion.div>
                             ))}
-                            
+
                             {/* Loading indicator */}
                             {loading && (
                                 <motion.div
@@ -544,15 +537,13 @@ export default function Chat() {
                                     className="flex justify-start"
                                 >
                                     <div className="flex items-start space-x-2">
-                                        <div className={`flex-shrink-0 p-2 rounded-full ${
-                                            darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                                        }`}>
+                                        <div className={`flex-shrink-0 p-2 rounded-full ${darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                                            }`}>
                                             <Bot className={`w-4 h-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`} />
                                         </div>
-                                        
-                                        <div className={`relative rounded-lg px-4 py-3 ${
-                                            darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200 shadow-sm'
-                                        }`}>
+
+                                        <div className={`relative rounded-lg px-4 py-3 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200 shadow-sm'
+                                            }`}>
                                             <div className="flex space-x-2">
                                                 <motion.div
                                                     animate={{ y: [0, -3, 0] }}
