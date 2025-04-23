@@ -70,6 +70,10 @@ function ChatInput({ onSendMessage, loading, darkMode }: {
                 </div>
                 <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} mt-2 text-center`}>
                     FinAnswer provides general investing information, not financial advice.
+                    <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} mt-2 text-center`}>
+                        Created with ❤️ by <a href="https://github.com/cyberpunk47">Yasir </a>& 
+                        <a href="https://github.com/razaaquib99"> Aquib</a>.
+                    </div>
                 </div>
             </form>
         </div>
